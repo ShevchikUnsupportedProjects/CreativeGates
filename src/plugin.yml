@@ -1,0 +1,4 @@
+main: com.massivecraft.creativegates.CreativeGates
+name: CreativeGates
+version: 1.0.oldgood
+softdepend: [DimensionDoor, Multiverse-Core, MultiVerse, WorldManager, xcore]
