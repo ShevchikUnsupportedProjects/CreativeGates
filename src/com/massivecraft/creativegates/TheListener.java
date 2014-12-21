@@ -21,153 +21,145 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.massivecraft.creativegates.event.CreativeGatesTeleportEvent;
 
-public class TheListener implements Listener
-{
+public class TheListener implements Listener {
 	// -------------------------------------------- //
 	// META
 	// -------------------------------------------- //
-	
+
 	public CreativeGates p;
-	public TheListener(CreativeGates p)
-	{
+
+	public TheListener(CreativeGates p) {
 		this.p = p;
 		Bukkit.getServer().getPluginManager().registerEvents(this, this.p);
 	}
-	
+
 	// -------------------------------------------- //
 	// BLOCK LISTENER NORMAL
 	// -------------------------------------------- //
 
 	// The purpose is to stop the water from falling
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onBlockFromTo(BlockFromToEvent event)
-	{
-		if (event.isCancelled()) return;
-		
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onBlockFromTo(BlockFromToEvent event) {
+		if (event.isCancelled())
+			return;
+
 		Block blockFrom = event.getBlock();
 		boolean isWater = blockFrom.getTypeId() == 9;
-		
-		if ( ! isWater)
-		{
+
+		if (!isWater) {
 			return;
 		}
-		
-		if (Gates.i.findFrom(blockFrom) != null)
-		{
+
+		if (Gates.i.findFrom(blockFrom) != null) {
 			event.setCancelled(true);
 		}
 	}
-	
+
 	// The gate content is invulnerable
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onBlockPlace(BlockPlaceEvent event)
-	{
-		Gate gate = Gates.i.findFromContent(event.getBlock()); 
-		if (gate != null)
-		{
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onBlockPlace(BlockPlaceEvent event) {
+		Gate gate = Gates.i.findFromContent(event.getBlock());
+		if (gate != null) {
 			event.setCancelled(true);
 		}
 	}
-	
+
 	// Is the player allowed to destroy gates?
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onBlockBreakNormal(BlockBreakEvent event)
-	{
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onBlockBreakNormal(BlockBreakEvent event) {
 		Gate gate = Gates.i.findFromFrame(event.getBlock());
-		if (gate == null)
-		{
+		if (gate == null) {
 			return;
 		}
-		
+
 		// A player is attempting to destroy a gate. Can he?
-		if ( ! Permission.DESTROY.has(event.getPlayer(), true))
-		{
+		if (!Permission.DESTROY.has(event.getPlayer(), true)) {
 			event.setCancelled(true);
 		}
 	}
-	
+
 	// -------------------------------------------- //
 	// BLOCK LISTENER MONITOR
 	// -------------------------------------------- //
-	
+
 	// Destroy the gate if the frame breaks
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onBlockBreakMonitor(BlockBreakEvent event)
-	{
-		if (event.isCancelled()) return;
-		
+	public void onBlockBreakMonitor(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
+
 		Gate gate = Gates.i.findFromFrame(event.getBlock());
-		if (gate != null)
-		{
+		if (gate != null) {
 			gate.close();
 		}
 	}
-	
+
 	// -------------------------------------------- //
 	// BLOCK LISTENER MONITOR
 	// -------------------------------------------- //
 	// Gates can not be destroyed by explosions
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onEntityExplode(EntityExplodeEvent event)
-	{
-		if (event.isCancelled()) return;
-		
-		for (Block block : event.blockList())
-		{
-			if (Gates.i.findFrom(block) != null)
-			{
+	public void onEntityExplode(EntityExplodeEvent event) {
+		if (event.isCancelled())
+			return;
+
+		for (Block block : event.blockList()) {
+			if (Gates.i.findFrom(block) != null) {
 				event.setCancelled(true);
 				return;
 			}
 		}
 	}
-	
+
 	// -------------------------------------------- //
 	// BLOCK LISTENER MONITOR
 	// -------------------------------------------- //
-	
-	@EventHandler(priority = EventPriority.MONITOR,ignoreCancelled=true)
-    public void onPlayerGateTeleport(CreativeGatesTeleportEvent event)
-    {
-        Player player = event.getPlayerMoveEvent().getPlayer();
-        
-        // For now we do not handle vehicles
-        if (player.isInsideVehicle())
-        {
-            player.leaveVehicle();
-        }
 
-        player.teleport(event.getLocation());
-    }
-	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerGateTeleport(CreativeGatesTeleportEvent event) {
+		Player player = event.getPlayerMoveEvent().getPlayer();
+
+		// For now we do not handle vehicles
+		if (player.isInsideVehicle()) {
+			player.leaveVehicle();
+		}
+
+		player.teleport(event.getLocation());
+	}
+
 	// -------------------------------------------- //
 	// PLAYER LISTENER
 	// -------------------------------------------- //
-	
-	@EventHandler(priority = EventPriority.MONITOR,ignoreCancelled=true)
-	public void onPlayerMove(PlayerMoveEvent event)
-	{
-		if (event.getFrom().getBlock().equals(event.getTo().getBlock())) {return;}
-		
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerMove(PlayerMoveEvent event) {
+		if (event.getFrom().getBlock().equals(event.getTo().getBlock())) {
+			return;
+		}
+
 		// We look one up due to half blocks.
 		Block blockToTest = event.getTo().getBlock().getRelative(BlockFace.UP);
-		
-		// Fast material check 
-		if (blockToTest.getType() != Material.STATIONARY_WATER && blockToTest.getType() != Material.WATER) {return;};
-		
+
+		// Fast material check
+		if (blockToTest.getType() != Material.STATIONARY_WATER && blockToTest.getType() != Material.WATER) {
+			return;
+		}
+		;
+
 		// Find the gate if there is one
 		Gate gateFrom = Gates.i.findFromContent(blockToTest);
-		if (gateFrom == null) return;
-		
+		if (gateFrom == null)
+			return;
+
 		// Can the player use gates?
-		if ( ! Permission.USE.has(event.getPlayer(), true)) return;
-		
+		if (!Permission.USE.has(event.getPlayer(), true))
+			return;
+
 		// Find the target location
 		Gate gateTo = gateFrom.getMyTargetGate();
 		Location targetLocation = gateTo == null ? null : gateTo.getMyOwnExitLocation();
-		if (targetLocation == null)
-		{
+		if (targetLocation == null) {
 			event.getPlayer().sendMessage(p.txt.parse(Lang.useFailNoTargetLocation));
 			return;
 		}
@@ -175,54 +167,48 @@ public class TheListener implements Listener
 		CreativeGatesTeleportEvent gateevent = new CreativeGatesTeleportEvent(event, targetLocation, gateFrom, gateTo);
 		p.getServer().getPluginManager().callEvent(gateevent);
 	}
-	
+
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onPlayerInteract(PlayerInteractEvent event)
-	{
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onPlayerInteract(PlayerInteractEvent event) {
 		// We are only interested in clicks on a block with a wand
-		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		if (event.getPlayer().getItemInHand().getTypeId() != Conf.wand) return;
-		
+		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+		if (event.getPlayer().getItemInHand().getTypeId() != Conf.wand)
+			return;
+
 		Block clickedBlock = event.getClickedBlock();
 		Player player = event.getPlayer();
-		
+
 		// Did we hit an existing gate?
 		// In such case send information.
 		Gate gate = Gates.i.findFrom(clickedBlock);
-		if (gate != null)
-		{
+		if (gate != null) {
 			gate.informPlayer(player);
 			return;
 		}
-		
+
 		// Did we hit a diamond block?
-		if (clickedBlock.getTypeId() == Conf.block)
-		{
+		if (clickedBlock.getTypeId() == Conf.block) {
 			// create a gate if the player has the permission
-			if (Permission.CREATE.has(player, true))
-			{
+			if (Permission.CREATE.has(player, true)) {
 				Gates.i.open(new WorldCoord(clickedBlock), player);
 			}
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onPlayerBucketFill(PlayerBucketFillEvent event)
-	{
-		if ( Gates.i.findFromContent(event.getBlockClicked()) != null )
-		{
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+		if (Gates.i.findFromContent(event.getBlockClicked()) != null) {
 			event.setCancelled(true);
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.NORMAL,ignoreCancelled=true)
-	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event)
-	{		
-		if ( Gates.i.findFromContent(event.getBlockClicked().getRelative(event.getBlockFace())) != null )
-		{
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+		if (Gates.i.findFromContent(event.getBlockClicked().getRelative(event.getBlockFace())) != null) {
 			event.setCancelled(true);
 		}
 	}
-	
+
 }
