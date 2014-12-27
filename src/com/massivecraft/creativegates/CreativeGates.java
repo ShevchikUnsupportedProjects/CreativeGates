@@ -4,13 +4,13 @@ import com.massivecraft.creativegates.zcore.*;
 
 public class CreativeGates extends MPlugin {
 	// Our single plugin instance
-	public static CreativeGates p;
+	public static CreativeGates instance;
 
 	// Listeners
 	public TheListener theListener;
 
 	public CreativeGates() {
-		p = this;
+		instance = this;
 	}
 
 	public void onEnable() {

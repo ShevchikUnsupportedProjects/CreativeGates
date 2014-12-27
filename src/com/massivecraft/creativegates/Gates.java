@@ -15,7 +15,7 @@ import com.massivecraft.creativegates.zcore.persist.*;
 public class Gates extends EntityCollection<Gate> {
 	public static Gates i = new Gates();
 
-	CreativeGates p = CreativeGates.p;
+	CreativeGates p = CreativeGates.instance;
 
 	private Gates() {
 		super(Gate.class, new ConcurrentSkipListSet<Gate>(new Comparator<Gate>() {
@@ -23,7 +23,7 @@ public class Gates extends EntityCollection<Gate> {
 			public int compare(Gate me, Gate you) {
 				return me.sourceCoord.toString().compareTo(you.sourceCoord.toString());
 			}
-		}), new ConcurrentHashMap<String, Gate>(), new File(CreativeGates.p.getDataFolder(), "gate.json"), CreativeGates.p.gson);
+		}), new ConcurrentHashMap<String, Gate>(), new File(CreativeGates.instance.getDataFolder(), "gate.json"), CreativeGates.instance.gson);
 	}
 
 	@Override

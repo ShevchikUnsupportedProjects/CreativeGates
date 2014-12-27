@@ -13,11 +13,12 @@ import com.massivecraft.creativegates.zcore.persist.*;
 import com.massivecraft.creativegates.zcore.util.*;
 
 public class Gate extends Entity implements Comparable<Gate> {
-	public static transient CreativeGates p = CreativeGates.p;
+
+	public static transient CreativeGates plugin = CreativeGates.instance;
 
 	public transient Set<WorldCoord> contentCoords;
 	public transient Set<WorldCoord> frameCoords;
-	public transient Set<Integer> frameMaterialIds;
+	public transient Set<IdAndDataEntry> frameMaterialIds;
 	public WorldCoord sourceCoord;
 	public transient boolean frameDirIsNS; // True means NS direction. false means WE direction.
 
@@ -55,11 +56,11 @@ public class Gate extends Entity implements Comparable<Gate> {
 
 		// TODO: THE NULL CHECK IS OK?
 		if (sourceBlock == null || sourceBlock.getTypeId() != Conf.block) {
-			throw new GateOpenException(p.txt.parse(Lang.openFailWrongSourceMaterial, TextUtil.getMaterialName(Conf.block)));
+			throw new GateOpenException(plugin.txt.parse(Lang.openFailWrongSourceMaterial, TextUtil.getMaterialName(Conf.block)));
 		}
 
 		if (!this.dataPopulate()) {
-			throw new GateOpenException(p.txt.parse(Lang.openFailNoFrame));
+			throw new GateOpenException(plugin.txt.parse(Lang.openFailNoFrame));
 		}
 
 		// Finally we set the content blocks material to water
@@ -77,7 +78,7 @@ public class Gate extends Entity implements Comparable<Gate> {
 	public void dataClear() {
 		contentCoords = new HashSet<WorldCoord>();
 		frameCoords = new HashSet<WorldCoord>();
-		frameMaterialIds = new TreeSet<Integer>();
+		frameMaterialIds = new TreeSet<IdAndDataEntry>();
 	}
 
 	/**
@@ -124,7 +125,7 @@ public class Gate extends Entity implements Comparable<Gate> {
 				if (!contentBlocks.contains(potentialBlock)) {
 					frameBlocks.add(potentialBlock);
 					if (potentialBlock != sourceBlock) {
-						frameMaterialIds.add(potentialBlock.getTypeId());
+						frameMaterialIds.add(new IdAndDataEntry(potentialBlock.getTypeId(), potentialBlock.getData()));
 					}
 				}
 			}
@@ -238,17 +239,17 @@ public class Gate extends Entity implements Comparable<Gate> {
 	@SuppressWarnings("deprecation")
 	public String getInfoMsgMaterial() {
 		ArrayList<String> materialNames = new ArrayList<String>();
-		for (Integer frameMaterialId : this.frameMaterialIds) {
-			materialNames.add(p.txt.parse("<h>") + TextUtil.getMaterialName(Material.getMaterial(frameMaterialId)));
+		for (IdAndDataEntry frameMaterialId : this.frameMaterialIds) {
+			materialNames.add(plugin.txt.parse("<h>") + TextUtil.getMaterialName(Material.getMaterial(frameMaterialId.getId()))+":"+frameMaterialId.getData());
 		}
 
-		String materials = TextUtil.implode(materialNames, p.txt.parse("<i>, "));
+		String materials = TextUtil.implode(materialNames, plugin.txt.parse("<i>, "));
 
-		return p.txt.parse(Lang.infoMaterials, materials);
+		return plugin.txt.parse(Lang.infoMaterials, materials);
 	}
 
 	public String getInfoMsgNetwork() {
-		return p.txt.parse(Lang.infoGateCount, this.getNetworkGatePath().size());
+		return plugin.txt.parse(Lang.infoGateCount, this.getNetworkGatePath().size());
 	}
 
 	public void informPlayer(Player player) {
