@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.libs.com.google.gson.reflect.TypeToken;
 import org.bukkit.entity.Player;
 
+import com.google.gson.reflect.TypeToken;
 import com.massivecraft.creativegates.zcore.persist.*;
 
 public class Gates extends EntityCollection<Gate> {

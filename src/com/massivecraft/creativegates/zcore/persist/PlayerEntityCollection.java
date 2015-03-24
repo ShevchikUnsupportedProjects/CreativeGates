@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.entity.Player;
+
+import com.google.gson.Gson;
 
 /**
  * The PlayerEntityCollection is an EntityCollection with the extra features a player skin usually requires.
@@ -26,7 +27,6 @@ public abstract class PlayerEntityCollection<E extends Entity> extends EntityCol
 		return this.get(player.getName());
 	}
 
-	@SuppressWarnings("deprecation")
 	public Set<E> getOnline() {
 		Set<E> entities = new HashSet<E>();
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {

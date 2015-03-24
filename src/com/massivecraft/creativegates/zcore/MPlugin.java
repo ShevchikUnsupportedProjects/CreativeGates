@@ -9,14 +9,11 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
-import org.bukkit.craftbukkit.libs.com.google.gson.reflect.TypeToken;
-//import org.bukkit.event.Event;
-//import org.bukkit.event.Listener;
-//import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.massivecraft.creativegates.zcore.persist.EM;
 import com.massivecraft.creativegates.zcore.persist.SaveTask;
 import com.massivecraft.creativegates.zcore.util.LibLoader;
@@ -113,14 +110,6 @@ public abstract class MPlugin extends JavaPlugin {
 		log("Now I suicide!");
 		this.getServer().getPluginManager().disablePlugin(this);
 	}
-
-	// -------------------------------------------- //
-	// Register Event convenience method
-	// -------------------------------------------- //
-
-	/*
-	 * public void registerEvent(Event.Type type, Listener listener, Event.Priority priority) { Bukkit.getServer().getPluginManager().registerEvent(type, listener, priority, this); }
-	 */
 
 	// -------------------------------------------- //
 	// Some inits...
