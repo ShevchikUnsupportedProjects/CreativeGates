@@ -1,4 +1,4 @@
-package com.massivecraft.creativegates;
+package com.massivecraft.creativegates.gates;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.google.gson.reflect.TypeToken;
+import com.massivecraft.creativegates.CreativeGates;
 import com.massivecraft.creativegates.zcore.persist.*;
 
 public class Gates extends EntityCollection<Gate> {

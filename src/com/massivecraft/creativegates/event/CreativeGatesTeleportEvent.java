@@ -6,7 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.massivecraft.creativegates.Gate;
+import com.massivecraft.creativegates.gates.Gate;
 
 public class CreativeGatesTeleportEvent extends Event implements Cancellable {
 	// -------------------------------------------- //

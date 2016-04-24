@@ -1,4 +1,4 @@
-package com.massivecraft.creativegates;
+package com.massivecraft.creativegates.gates;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,6 +19,10 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import com.massivecraft.creativegates.Conf;
+import com.massivecraft.creativegates.CreativeGates;
+import com.massivecraft.creativegates.Lang;
+import com.massivecraft.creativegates.Permission;
 import com.massivecraft.creativegates.event.CreativeGatesTeleportEvent;
 
 public class TheListener implements Listener {

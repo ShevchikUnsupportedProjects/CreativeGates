@@ -1,4 +1,4 @@
-package com.massivecraft.creativegates;
+package com.massivecraft.creativegates.gates;
 
 import java.util.*;
 
@@ -8,6 +8,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import com.massivecraft.creativegates.Conf;
+import com.massivecraft.creativegates.CreativeGates;
+import com.massivecraft.creativegates.IdAndDataEntry;
+import com.massivecraft.creativegates.Lang;
 import com.massivecraft.creativegates.util.BlockUtil;
 import com.massivecraft.creativegates.zcore.persist.*;
 import com.massivecraft.creativegates.zcore.util.*;

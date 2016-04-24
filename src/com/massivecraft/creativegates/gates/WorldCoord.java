@@ -1,4 +1,4 @@
-package com.massivecraft.creativegates;
+package com.massivecraft.creativegates.gates;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
