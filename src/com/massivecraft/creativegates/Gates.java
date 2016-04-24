@@ -13,7 +13,8 @@ import com.google.gson.reflect.TypeToken;
 import com.massivecraft.creativegates.zcore.persist.*;
 
 public class Gates extends EntityCollection<Gate> {
-	public static Gates i = new Gates();
+
+	public static final Gates INSTANCE = new Gates();
 
 	CreativeGates p = CreativeGates.instance;
 

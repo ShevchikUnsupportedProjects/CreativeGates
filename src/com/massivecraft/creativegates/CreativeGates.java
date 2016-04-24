@@ -1,5 +1,7 @@
 package com.massivecraft.creativegates;
 
+import org.bukkit.Bukkit;
+
 import com.massivecraft.creativegates.zcore.*;
 
 public class CreativeGates extends MPlugin {
@@ -20,8 +22,13 @@ public class CreativeGates extends MPlugin {
 		// TODO fix config auto update routine... ?
 		Conf.load();
 
-		Gates.i.loadFromDisc();
-		Gates.i.openAllOrDetach();
+		Gates.INSTANCE.loadFromDisc();
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
+			public void run() {
+				Gates.INSTANCE.openAllOrDetach();
+			}
+		});
 
 		// Register events
 		this.theListener = new TheListener(this);
@@ -30,7 +37,8 @@ public class CreativeGates extends MPlugin {
 	}
 
 	public void onDisable() {
-		Gates.i.emptyAll();
+		Gates.INSTANCE.emptyAll();
 		super.onDisable();
 	}
+
 }

@@ -44,7 +44,7 @@ public class Gate extends Entity implements Comparable<Gate> {
 	 * Is this gate open right now?
 	 */
 	public boolean isOpen() {
-		return Gates.i.findFrom(sourceCoord) != null;
+		return Gates.INSTANCE.findFrom(sourceCoord) != null;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -165,7 +165,7 @@ public class Gate extends Entity implements Comparable<Gate> {
 
 		// We put the gates in a tree set to sort them after gate location.
 		TreeSet<Gate> gates = new TreeSet<Gate>();
-		gates.addAll(Gates.i.get());
+		gates.addAll(Gates.INSTANCE.get());
 
 		for (Gate gate : gates) {
 			if (this.frameMaterialIds.equals(gate.frameMaterialIds)) {

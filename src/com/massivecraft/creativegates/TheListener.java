@@ -51,7 +51,7 @@ public class TheListener implements Listener {
 			return;
 		}
 
-		if (Gates.i.findFrom(blockFrom) != null) {
+		if (Gates.INSTANCE.findFrom(blockFrom) != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -59,7 +59,7 @@ public class TheListener implements Listener {
 	// The gate content is invulnerable
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		Gate gate = Gates.i.findFromContent(event.getBlock());
+		Gate gate = Gates.INSTANCE.findFromContent(event.getBlock());
 		if (gate != null) {
 			event.setCancelled(true);
 		}
@@ -68,7 +68,7 @@ public class TheListener implements Listener {
 	// Is the player allowed to destroy gates?
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockBreakNormal(BlockBreakEvent event) {
-		Gate gate = Gates.i.findFromFrame(event.getBlock());
+		Gate gate = Gates.INSTANCE.findFromFrame(event.getBlock());
 		if (gate == null) {
 			return;
 		}
@@ -89,7 +89,7 @@ public class TheListener implements Listener {
 		if (event.isCancelled())
 			return;
 
-		Gate gate = Gates.i.findFromFrame(event.getBlock());
+		Gate gate = Gates.INSTANCE.findFromFrame(event.getBlock());
 		if (gate != null) {
 			gate.close();
 		}
@@ -105,7 +105,7 @@ public class TheListener implements Listener {
 			return;
 
 		for (Block block : event.blockList()) {
-			if (Gates.i.findFrom(block) != null) {
+			if (Gates.INSTANCE.findFrom(block) != null) {
 				event.setCancelled(true);
 				return;
 			}
@@ -145,10 +145,9 @@ public class TheListener implements Listener {
 		if (blockToTest.getType() != Material.STATIONARY_WATER && blockToTest.getType() != Material.WATER) {
 			return;
 		}
-		;
 
 		// Find the gate if there is one
-		Gate gateFrom = Gates.i.findFromContent(blockToTest);
+		Gate gateFrom = Gates.INSTANCE.findFromContent(blockToTest);
 		if (gateFrom == null)
 			return;
 
@@ -182,7 +181,7 @@ public class TheListener implements Listener {
 
 		// Did we hit an existing gate?
 		// In such case send information.
-		Gate gate = Gates.i.findFrom(clickedBlock);
+		Gate gate = Gates.INSTANCE.findFrom(clickedBlock);
 		if (gate != null) {
 			gate.informPlayer(player);
 			return;
@@ -192,21 +191,21 @@ public class TheListener implements Listener {
 		if (clickedBlock.getTypeId() == Conf.block) {
 			// create a gate if the player has the permission
 			if (Permission.CREATE.has(player, true)) {
-				Gates.i.open(new WorldCoord(clickedBlock), player);
+				Gates.INSTANCE.open(new WorldCoord(clickedBlock), player);
 			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-		if (Gates.i.findFromContent(event.getBlockClicked()) != null) {
+		if (Gates.INSTANCE.findFromContent(event.getBlockClicked()) != null) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-		if (Gates.i.findFromContent(event.getBlockClicked().getRelative(event.getBlockFace())) != null) {
+		if (Gates.INSTANCE.findFromContent(event.getBlockClicked().getRelative(event.getBlockFace())) != null) {
 			event.setCancelled(true);
 		}
 	}
