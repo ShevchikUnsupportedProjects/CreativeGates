@@ -13,10 +13,10 @@ public class Conf {
 	public static transient Conf i = new Conf();
 
 	public static void load() {
-		CreativeGates.instance.persist.loadOrSaveDefault(i, Conf.class);
+		CreativeGates.getInstance().persist.loadOrSaveDefault(i, Conf.class);
 	}
 
 	public static void save() {
-		CreativeGates.instance.persist.save(i);
+		CreativeGates.getInstance().persist.save(i);
 	}
 }

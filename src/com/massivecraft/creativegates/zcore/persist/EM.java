@@ -6,7 +6,8 @@ import com.massivecraft.creativegates.zcore.persist.Entity;
 import com.massivecraft.creativegates.zcore.persist.EntityCollection;
 
 public class EM {
-	public static Map<Class<? extends Entity>, EntityCollection<? extends Entity>> class2Entities = new LinkedHashMap<Class<? extends Entity>, EntityCollection<? extends Entity>>();
+
+	private static final Map<Class<? extends Entity>, EntityCollection<? extends Entity>> class2Entities = new LinkedHashMap<Class<? extends Entity>, EntityCollection<? extends Entity>>();
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Entity> EntityCollection<T> getEntitiesCollectionForEntityClass(Class<T> entityClass) {

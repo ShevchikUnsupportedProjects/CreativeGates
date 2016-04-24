@@ -14,7 +14,7 @@ import com.massivecraft.creativegates.zcore.util.*;
 
 public class Gate extends Entity implements Comparable<Gate> {
 
-	public static transient CreativeGates plugin = CreativeGates.instance;
+	public static transient CreativeGates plugin = CreativeGates.getInstance();
 
 	public transient Set<WorldCoord> contentCoords;
 	public transient Set<WorldCoord> frameCoords;

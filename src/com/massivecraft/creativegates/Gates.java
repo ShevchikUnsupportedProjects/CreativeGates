@@ -16,7 +16,7 @@ public class Gates extends EntityCollection<Gate> {
 
 	public static final Gates INSTANCE = new Gates();
 
-	CreativeGates p = CreativeGates.instance;
+	CreativeGates p = CreativeGates.getInstance();
 
 	private Gates() {
 		super(Gate.class, new ConcurrentSkipListSet<Gate>(new Comparator<Gate>() {
@@ -24,7 +24,7 @@ public class Gates extends EntityCollection<Gate> {
 			public int compare(Gate me, Gate you) {
 				return me.sourceCoord.toString().compareTo(you.sourceCoord.toString());
 			}
-		}), new ConcurrentHashMap<String, Gate>(), new File(CreativeGates.instance.getDataFolder(), "gate.json"), CreativeGates.instance.gson);
+		}), new ConcurrentHashMap<String, Gate>(), new File(CreativeGates.getInstance().getDataFolder(), "gate.json"), CreativeGates.getInstance().gson);
 	}
 
 	@Override

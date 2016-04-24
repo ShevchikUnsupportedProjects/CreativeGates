@@ -22,15 +22,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import com.massivecraft.creativegates.event.CreativeGatesTeleportEvent;
 
 public class TheListener implements Listener {
+
 	// -------------------------------------------- //
 	// META
 	// -------------------------------------------- //
 
-	public CreativeGates p;
-
-	public TheListener(CreativeGates p) {
-		this.p = p;
-		Bukkit.getServer().getPluginManager().registerEvents(this, this.p);
+	public TheListener() {
+		Bukkit.getServer().getPluginManager().registerEvents(this, CreativeGates.getInstance());
 	}
 
 	// -------------------------------------------- //
@@ -159,12 +157,12 @@ public class TheListener implements Listener {
 		Gate gateTo = gateFrom.getMyTargetGate();
 		Location targetLocation = gateTo == null ? null : gateTo.getMyOwnExitLocation();
 		if (targetLocation == null) {
-			event.getPlayer().sendMessage(p.txt.parse(Lang.useFailNoTargetLocation));
+			event.getPlayer().sendMessage(CreativeGates.getInstance().txt.parse(Lang.useFailNoTargetLocation));
 			return;
 		}
 
 		CreativeGatesTeleportEvent gateevent = new CreativeGatesTeleportEvent(event, targetLocation, gateFrom, gateTo);
-		p.getServer().getPluginManager().callEvent(gateevent);
+		Bukkit.getPluginManager().callEvent(gateevent);
 	}
 
 	@SuppressWarnings("deprecation")

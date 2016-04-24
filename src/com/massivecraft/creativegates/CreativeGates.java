@@ -5,11 +5,13 @@ import org.bukkit.Bukkit;
 import com.massivecraft.creativegates.zcore.*;
 
 public class CreativeGates extends MPlugin {
-	// Our single plugin instance
-	public static CreativeGates instance;
 
-	// Listeners
-	public TheListener theListener;
+	// Our single plugin instance
+	private static CreativeGates instance;
+
+	public static CreativeGates getInstance() {
+		return instance;
+	}
 
 	public CreativeGates() {
 		instance = this;
@@ -31,7 +33,7 @@ public class CreativeGates extends MPlugin {
 		});
 
 		// Register events
-		this.theListener = new TheListener(this);
+		new TheListener();
 
 		postEnable();
 	}

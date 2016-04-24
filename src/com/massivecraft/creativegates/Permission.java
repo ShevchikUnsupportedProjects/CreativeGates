@@ -12,11 +12,11 @@ public enum Permission {
 	}
 
 	public boolean has(CommandSender sender, boolean informSenderIfNot) {
-		return CreativeGates.instance.perm.has(sender, this.node, informSenderIfNot);
+		return CreativeGates.getInstance().perm.has(sender, this.node, informSenderIfNot);
 	}
 
 	public boolean has(CommandSender sender) {
-		return CreativeGates.instance.perm.has(sender, this.node, false);
+		return CreativeGates.getInstance().perm.has(sender, this.node, false);
 	}
 
 }
