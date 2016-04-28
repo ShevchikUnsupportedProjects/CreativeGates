@@ -1,37 +1,70 @@
 package com.massivecraft.creativegates.gates;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import com.google.gson.reflect.TypeToken;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.massivecraft.creativegates.CreativeGates;
-import com.massivecraft.creativegates.zcore.persist.*;
 
-public class Gates extends EntityCollection<Gate> {
+public class Gates {
 
 	public static final Gates INSTANCE = new Gates();
 
-	CreativeGates p = CreativeGates.getInstance();
-
 	private Gates() {
-		super(Gate.class, new ConcurrentSkipListSet<Gate>(new Comparator<Gate>() {
-			@Override
-			public int compare(Gate me, Gate you) {
-				return me.sourceCoord.toString().compareTo(you.sourceCoord.toString());
-			}
-		}), new ConcurrentHashMap<String, Gate>(), new File(CreativeGates.getInstance().getDataFolder(), "gate.json"), CreativeGates.getInstance().gson);
 	}
 
-	@Override
-	public Type getMapType() {
-		return new TypeToken<Map<String, Gate>>() {
-		}.getType();
+	private final HashMap<String, Gate> gates = new HashMap<String, Gate>();
+
+	private int nextId;
+
+	private File getFile() {
+		return new File(CreativeGates.getInstance().getDataFolder(), "gate.json");
+	}
+
+	@SuppressWarnings("serial")
+	private final Type typeToken = new TypeToken<Map<String, Gate>>() {
+	}.getType();
+
+	@SuppressWarnings("unchecked")
+	public void load() {
+		try {
+			gates.clear();
+			if (getFile().exists()) {
+				gates.putAll((Map<? extends String, ? extends Gate>) CreativeGates.getInstance().gson.fromJson(new InputStreamReader(new FileInputStream(getFile())), typeToken));
+				for (Entry<String, Gate> entry : gates.entrySet()) {
+					entry.getValue().setup(entry.getKey());
+					nextId = Math.max(nextId, Integer.parseInt(entry.getKey()));
+				}
+			}
+		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
+		}
+	}
+
+	public void save() {
+		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(getFile()))) {
+			CreativeGates.getInstance().gson.toJson(gates, typeToken, writer);
+		} catch (IOException e) {
+		}
+	}
+
+	public Collection<Gate> get() {
+		return new ArrayList<Gate>(gates.values());
 	}
 
 	// -------------------------------------------- //
@@ -65,9 +98,8 @@ public class Gates extends EntityCollection<Gate> {
 	}
 
 	public Gate findFrom(WorldCoord coord) {
-		Gate gate;
+		Gate gate = findFromContent(coord);
 
-		gate = findFromContent(coord);
 		if (gate != null) {
 			return gate;
 		}
@@ -89,13 +121,11 @@ public class Gates extends EntityCollection<Gate> {
 		}
 	}
 
-	public void openAllOrDetach() {
+	public void openAll() {
 		for (Gate gate : this.get()) {
 			try {
 				gate.open();
 			} catch (GateOpenException e) {
-				gate.detach();
-				p.log(e.getMessage() + " Gate was removed.");
 			}
 		}
 	}
@@ -104,22 +134,21 @@ public class Gates extends EntityCollection<Gate> {
 	// Gate Factory
 	// -------------------------------------------- //
 
-	// TODO: Kolla in open or die saken. Den ska nog bytas ut mot attach.
 	public Gate open(WorldCoord sourceCoord, Player player) {
 		Gate gate = new Gate();
+		gate.setup(String.valueOf(++nextId));
 		gate.sourceCoord = sourceCoord;
-		// p.log("sourceCoord: "+sourceCoord);
 
 		try {
 			gate.open();
-			gate.attach();
+			addGate(gate);
 			if (player != null) {
 				gate.informPlayer(player);
 			}
 			return gate;
 		} catch (GateOpenException e) {
 			if (player == null) {
-				p.log(e.getMessage());
+				CreativeGates.getInstance().log(e.getMessage());
 			} else {
 				player.sendMessage(e.getMessage());
 			}
@@ -129,6 +158,14 @@ public class Gates extends EntityCollection<Gate> {
 
 	public Gate open(WorldCoord sourceCoord) {
 		return this.open(sourceCoord, null);
+	}
+
+	public void addGate(Gate gate) {
+		gates.put(gate.id, gate);
+	}
+
+	public void removeGate(Gate gate) {
+		gates.remove(gate.id);
 	}
 
 }

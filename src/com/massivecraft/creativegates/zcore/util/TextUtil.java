@@ -8,10 +8,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 public class TextUtil {
-	public Map<String, String> tags;
 
-	public TextUtil() {
-		this.tags = new HashMap<String, String>();
+	public final Map<String, String> tags = new HashMap<String, String>();
+	{
+		this.tags.put("l", "<green>");
+		this.tags.put("a", "<gold>");
+		this.tags.put("n", "<silver>");
+		this.tags.put("i", "<yellow>");
+		this.tags.put("g", "<lime>");
+		this.tags.put("b", "<rose>");
+		this.tags.put("h", "<pink>");
+		this.tags.put("c", "<aqua>");
+		this.tags.put("p", "<teal>");
 	}
 
 	// -------------------------------------------- //
@@ -19,11 +27,11 @@ public class TextUtil {
 	// -------------------------------------------- //
 
 	public String parse(String str, Object... args) {
-		return String.format(this.parse(str), args);
+		return String.format(parse(str), args);
 	}
 
 	public String parse(String str) {
-		return this.parseTags(parseColor(str));
+		return parseColor(parseTags(str));
 	}
 
 	// -------------------------------------------- //
@@ -58,26 +66,36 @@ public class TextUtil {
 
 	public static String parseColor(String string) {
 		string = parseColorAmp(string);
-		string = parseColorAcc(string);
 		string = parseColorTags(string);
 		return string;
 	}
 
 	public static String parseColorAmp(String string) {
-		string = string.replaceAll("(§([a-z0-9]))", "\u00A7$2");
-		string = string.replaceAll("(&([a-z0-9]))", "\u00A7$2");
-		string = string.replace("&&", "&");
-		return string;
-	}
-
-	public static String parseColorAcc(String string) {
-		return string.replace("`e", "").replace("`r", ChatColor.RED.toString()).replace("`R", ChatColor.DARK_RED.toString()).replace("`y", ChatColor.YELLOW.toString()).replace("`Y", ChatColor.GOLD.toString()).replace("`g", ChatColor.GREEN.toString()).replace("`G", ChatColor.DARK_GREEN.toString()).replace("`a", ChatColor.AQUA.toString()).replace("`A", ChatColor.DARK_AQUA.toString()).replace("`b", ChatColor.BLUE.toString()).replace("`B", ChatColor.DARK_BLUE.toString())
-				.replace("`p", ChatColor.LIGHT_PURPLE.toString()).replace("`P", ChatColor.DARK_PURPLE.toString()).replace("`k", ChatColor.BLACK.toString()).replace("`s", ChatColor.GRAY.toString()).replace("`S", ChatColor.DARK_GRAY.toString()).replace("`w", ChatColor.WHITE.toString());
+		return string
+		.replaceAll("(§([a-z0-9]))", "\u00A7$2")
+		.replaceAll("(&([a-z0-9]))", "\u00A7$2")
+		.replace("&&", "&");
 	}
 
 	public static String parseColorTags(String string) {
-		return string.replace("<empty>", "").replace("<black>", "\u00A70").replace("<navy>", "\u00A71").replace("<green>", "\u00A72").replace("<teal>", "\u00A73").replace("<red>", "\u00A74").replace("<purple>", "\u00A75").replace("<gold>", "\u00A76").replace("<silver>", "\u00A77").replace("<gray>", "\u00A78").replace("<blue>", "\u00A79").replace("<lime>", "\u00A7a").replace("<aqua>", "\u00A7b").replace("<rose>", "\u00A7c").replace("<pink>", "\u00A7d").replace("<yellow>", "\u00A7e")
-				.replace("<white>", "\u00A7f");
+		return string
+		.replace("<empty>", "")
+		.replace("<black>", "\u00A70")
+		.replace("<navy>", "\u00A71")
+		.replace("<green>", "\u00A72")
+		.replace("<teal>", "\u00A73")
+		.replace("<red>", "\u00A74")
+		.replace("<purple>", "\u00A75")
+		.replace("<gold>", "\u00A76")
+		.replace("<silver>", "\u00A77")
+		.replace("<gray>", "\u00A78")
+		.replace("<blue>", "\u00A79")
+		.replace("<lime>", "\u00A7a")
+		.replace("<aqua>", "\u00A7b")
+		.replace("<rose>", "\u00A7c")
+		.replace("<pink>", "\u00A7d")
+		.replace("<yellow>", "\u00A7e")
+		.replace("<white>", "\u00A7f");
 	}
 
 	// -------------------------------------------- //

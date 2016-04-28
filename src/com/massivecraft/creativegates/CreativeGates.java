@@ -19,20 +19,25 @@ public class CreativeGates extends MPlugin {
 		instance = this;
 	}
 
+	protected boolean loaded;
+
+	@Override
 	public void onEnable() {
+		loaded = false;
+
 		if (!preEnable())
 			return;
 
-		// TODO fix config auto update routine... ?
 		Conf.load();
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
-				Gates.INSTANCE.loadFromDisc();
-				Gates.INSTANCE.openAllOrDetach();
+				Gates.INSTANCE.load();
+				Gates.INSTANCE.openAll();
+				loaded = true;
 			}
-		});
+		}, 20);
 
 		// Register events
 		new TheListener();
@@ -40,9 +45,13 @@ public class CreativeGates extends MPlugin {
 		postEnable();
 	}
 
+	@Override
 	public void onDisable() {
-		Gates.INSTANCE.emptyAll();
-		super.onDisable();
+		Conf.save();
+		if (loaded) {
+			Gates.INSTANCE.emptyAll();
+			Gates.INSTANCE.save();
+		}
 	}
 
 }

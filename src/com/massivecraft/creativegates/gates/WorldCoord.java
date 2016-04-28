@@ -41,8 +41,9 @@ public class WorldCoord {
 
 	public Block getBlock() {
 		World world = Bukkit.getServer().getWorld(worldName);
-		if (world == null)
+		if (world == null) {
 			return null;
+		}
 		return world.getBlockAt(x, y, z);
 	}
 

@@ -15,7 +15,7 @@ public abstract class MCommand<T extends MPlugin> {
 	public T p;
 
 	// The sub-commands to this command
-	public List<MCommand<?>> subCommands;
+	public final List<MCommand<?>> subCommands = new ArrayList<MCommand<?>>();
 
 	public void addSubCommand(MCommand<?> subCommand) {
 		subCommand.commandChain.addAll(this.commandChain);
@@ -24,13 +24,13 @@ public abstract class MCommand<T extends MPlugin> {
 	}
 
 	// The different names this commands will react to
-	public List<String> aliases;
-	public boolean allowNoSlashAccess;
+	public final List<String> aliases = new ArrayList<String>();
+	public final boolean allowNoSlashAccess = false;
 
 	// Information on the args
-	public List<String> requiredArgs;
-	public LinkedHashMap<String, String> optionalArgs;
-	public boolean errorOnToManyArgs = true;
+	public final List<String> requiredArgs = new ArrayList<String>();
+	public final LinkedHashMap<String, String> optionalArgs = new LinkedHashMap<String, String>();
+	public final boolean errorOnToManyArgs = true;
 
 	// FIELD: Help Short
 	// This field may be left blank and will in such case be loaded from the permissions node instead.
@@ -52,8 +52,7 @@ public abstract class MCommand<T extends MPlugin> {
 		return this.helpShort;
 	}
 
-	public List<String> helpLong;
-	public CommandVisibility visibility;
+	public List<String> helpLong = new ArrayList<String>();
 
 	// Some information on permissions
 	public boolean senderMustBePlayer;
@@ -68,20 +67,6 @@ public abstract class MCommand<T extends MPlugin> {
 
 	public MCommand(T p) {
 		this.p = p;
-
-		this.permission = null;
-
-		this.allowNoSlashAccess = false;
-
-		this.subCommands = new ArrayList<MCommand<?>>();
-		this.aliases = new ArrayList<String>();
-
-		this.requiredArgs = new ArrayList<String>();
-		this.optionalArgs = new LinkedHashMap<String, String>();
-
-		this.helpShort = null;
-		this.helpLong = new ArrayList<String>();
-		this.visibility = CommandVisibility.VISIBLE;
 	}
 
 	// The commandChain is a list of the parent command chain used to get to this command.

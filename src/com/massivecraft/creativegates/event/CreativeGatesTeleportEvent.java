@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import com.massivecraft.creativegates.gates.Gate;
 
 public class CreativeGatesTeleportEvent extends Event implements Cancellable {
+
 	// -------------------------------------------- //
 	// REQUIRED EVENT CODE
 	// -------------------------------------------- //
@@ -85,4 +86,5 @@ public class CreativeGatesTeleportEvent extends Event implements Cancellable {
 		this.setGateFrom(gateFrom);
 		this.setGateTo(gateTo);
 	}
+
 }
