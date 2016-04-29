@@ -158,11 +158,12 @@ public class Gate implements Comparable<Gate> {
 	 */
 	public Gate getMyTargetGate() {
 		ArrayList<Gate> networkGatePath = this.getNetworkGatePath();
-		int myIndex = networkGatePath.indexOf(this);
 
 		if (networkGatePath.size() == 1) {
 			return null;
 		}
+
+		int myIndex = networkGatePath.indexOf(this);
 
 		if (myIndex < networkGatePath.size() - 1) {
 			return networkGatePath.get(myIndex + 1);
