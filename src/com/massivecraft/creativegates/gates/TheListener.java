@@ -14,6 +14,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 import com.massivecraft.creativegates.Conf;
 import com.massivecraft.creativegates.CreativeGates;
@@ -61,7 +63,7 @@ public class TheListener implements Listener {
 	public void onBlockBreakMonitor(BlockBreakEvent event) {
 		Gate gate = Gates.INSTANCE.findFromFrame(event.getBlock());
 		if (gate != null) {
-			gate.close();
+			gate.remove();
 		}
 	}
 
@@ -145,7 +147,28 @@ public class TheListener implements Listener {
 		if (clickedBlock.getTypeId() == Conf.getInstance().block) {
 			// create a gate if the player has the permission
 			if (Permission.CREATE.has(player, true)) {
-				Gates.INSTANCE.open(new WorldCoord(clickedBlock), player);
+				Gates.INSTANCE.create(new WorldCoord(clickedBlock), player);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onWorldLoad(WorldLoadEvent event) {
+		for (Gate gate : Gates.INSTANCE.get()) {
+			if (!gate.isOpen() && gate.sourceCoord.worldName.equalsIgnoreCase(event.getWorld().getName())) {
+				try {
+					gate.open();
+				} catch (GateOpenException e) {
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onWorldUnload(WorldUnloadEvent event) {
+		for (Gate gate : Gates.INSTANCE.get()) {
+			if (gate.isOpen() && gate.sourceCoord.worldName.equalsIgnoreCase(event.getWorld().getName())) {
+				gate.close();
 			}
 		}
 	}

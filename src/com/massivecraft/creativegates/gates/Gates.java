@@ -11,8 +11,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -29,9 +29,7 @@ public class Gates {
 	private Gates() {
 	}
 
-	private final HashMap<String, Gate> gates = new HashMap<String, Gate>();
-
-	private int nextId;
+	private final HashSet<Gate> gates = new HashSet<Gate>();
 
 	private File getFile() {
 		return new File(CreativeGates.getInstance().getDataFolder(), "gate.json");
@@ -41,16 +39,12 @@ public class Gates {
 	private final Type typeToken = new TypeToken<Map<String, Gate>>() {
 	}.getType();
 
-	@SuppressWarnings("unchecked")
 	public void load() {
 		try {
 			gates.clear();
 			if (getFile().exists()) {
-				gates.putAll((Map<? extends String, ? extends Gate>) CreativeGates.getInstance().gson.fromJson(new InputStreamReader(new FileInputStream(getFile())), typeToken));
-				for (Entry<String, Gate> entry : gates.entrySet()) {
-					entry.getValue().setup(entry.getKey());
-					nextId = Math.max(nextId, Integer.parseInt(entry.getKey()));
-				}
+				Map<String, Gate> map = CreativeGates.getInstance().gson.fromJson(new InputStreamReader(new FileInputStream(getFile())), typeToken);
+				gates.addAll(map.values());
 			}
 		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
 		}
@@ -58,13 +52,18 @@ public class Gates {
 
 	public void save() {
 		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(getFile()))) {
-			CreativeGates.getInstance().gson.toJson(gates, typeToken, writer);
+			int fakeId = 1;
+			HashMap<String, Gate> map = new HashMap<String, Gate>();
+			for (Gate gate : gates) {
+				map.put(String.valueOf(fakeId++), gate);
+			}
+			CreativeGates.getInstance().gson.toJson(map, typeToken, writer);
 		} catch (IOException e) {
 		}
 	}
 
 	public Collection<Gate> get() {
-		return new ArrayList<Gate>(gates.values());
+		return new ArrayList<Gate>(gates);
 	}
 
 	// -------------------------------------------- //
@@ -134,9 +133,8 @@ public class Gates {
 	// Gate Factory
 	// -------------------------------------------- //
 
-	public Gate open(WorldCoord sourceCoord, Player player) {
+	public Gate create(WorldCoord sourceCoord, Player player) {
 		Gate gate = new Gate();
-		gate.setup(String.valueOf(++nextId));
 		gate.sourceCoord = sourceCoord;
 
 		try {
@@ -156,16 +154,12 @@ public class Gates {
 		}
 	}
 
-	public Gate open(WorldCoord sourceCoord) {
-		return this.open(sourceCoord, null);
-	}
-
 	public void addGate(Gate gate) {
-		gates.put(gate.id, gate);
+		gates.add(gate);
 	}
 
 	public void removeGate(Gate gate) {
-		gates.remove(gate.id);
+		gates.remove(gate);
 	}
 
 }

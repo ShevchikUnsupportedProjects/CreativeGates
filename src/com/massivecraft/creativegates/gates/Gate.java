@@ -20,9 +20,9 @@ public class Gate implements Comparable<Gate> {
 	public transient Set<WorldCoord> contentCoords;
 	public transient Set<WorldCoord> frameCoords;
 	public transient Set<IdAndDataEntry> frameMaterialIds;
-	public transient String id;
-	public WorldCoord sourceCoord;
 	public transient boolean frameDirIsNS; // True means NS direction. false means WE direction.
+
+	public WorldCoord sourceCoord;
 
 	private static transient final Set<BlockFace> expandFacesWE = new HashSet<BlockFace>();
 	private static transient final Set<BlockFace> expandFacesNS = new HashSet<BlockFace>();
@@ -39,20 +39,18 @@ public class Gate implements Comparable<Gate> {
 	}
 
 	protected Gate() {
-	}
-
-	public void setup(String id) {
-		this.id = id;
 		contentCoords = new HashSet<WorldCoord>();
 		frameCoords = new HashSet<WorldCoord>();
 		frameMaterialIds = new HashSet<IdAndDataEntry>();
 	}
 
+	private transient boolean open;
+
 	/**
 	 * Is this gate open right now?
 	 */
 	public boolean isOpen() {
-		return Gates.INSTANCE.findFrom(sourceCoord) != null;
+		return open;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -71,30 +69,30 @@ public class Gate implements Comparable<Gate> {
 			throw new GateOpenException(CreativeGates.getInstance().txt.parse(Lang.openFailNoFrame));
 		}
 
+		open = true;
+
 		// Finally we set the content blocks material to water
 		this.fill();
 	}
 
 	public void close() {
-		this.empty();
-		Gates.INSTANCE.removeGate(this);
-	}
-
-	/**
-	 * This method clears the "data" (coords and material ids).
-	 */
-	public void dataClear() {
+		empty();
 		contentCoords.clear();
 		frameCoords.clear();
 		frameMaterialIds.clear();
+		open = false;
+	}
+
+	public void remove() {
+		close();
+		Gates.INSTANCE.removeGate(this);
 	}
 
 	/**
 	 * This method populates the "data" (coords and material ids). It will return false if there was no possible frame.
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean dataPopulate() {
-		this.dataClear();
+	private boolean dataPopulate() {
 		Block sourceBlock = sourceCoord.getBlock();
 
 		// Search for content WE and NS
@@ -106,7 +104,6 @@ public class Gate implements Comparable<Gate> {
 		Set<Block> contentBlocks;
 
 		if (contentBlocksWE == null && contentBlocksNS == null) {
-			// throw new Exception("There is no frame, or it is broken, or it is to large.");
 			return false;
 		}
 
@@ -184,7 +181,7 @@ public class Gate implements Comparable<Gate> {
 		gates.addAll(Gates.INSTANCE.get());
 
 		for (Gate gate : gates) {
-			if (this.frameMaterialIds.equals(gate.frameMaterialIds)) {
+			if (gate.isOpen() && this.frameMaterialIds.equals(gate.frameMaterialIds)) {
 				networkGatePath.add(gate);
 			}
 		}
@@ -262,13 +259,19 @@ public class Gate implements Comparable<Gate> {
 
 	public void fill() {
 		for (WorldCoord coord : this.contentCoords) {
-			coord.getBlock().setType(Material.STATIONARY_WATER);
+			Block block = coord.getBlock();
+			if (block != null) {
+				block.setType(Material.STATIONARY_WATER);
+			}
 		}
 	}
 
 	public void empty() {
 		for (WorldCoord coord : this.contentCoords) {
-			coord.getBlock().setType(Material.AIR);
+			Block block = coord.getBlock();
+			if (block != null) {
+				block.setType(Material.AIR);
+			}
 		}
 	}
 
@@ -303,13 +306,24 @@ public class Gate implements Comparable<Gate> {
 		return foundBlocks;
 	}
 
-	// ----------------------------------------------//
-	// Comparable
-	// ----------------------------------------------//
 
 	@Override
 	public int compareTo(Gate o) {
 		return this.sourceCoord.toString().compareTo(o.sourceCoord.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return sourceCoord.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object otherObj) {
+		if (!(otherObj instanceof Gate)) {
+			return false;
+		}
+		Gate other = (Gate) otherObj;
+		return sourceCoord.equals(other.sourceCoord);
 	}
 
 }

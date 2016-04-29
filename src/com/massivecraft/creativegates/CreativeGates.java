@@ -1,7 +1,5 @@
 package com.massivecraft.creativegates;
 
-import org.bukkit.Bukkit;
-
 import com.massivecraft.creativegates.gates.Gates;
 import com.massivecraft.creativegates.gates.TheListener;
 import com.massivecraft.creativegates.zcore.*;
@@ -30,16 +28,9 @@ public class CreativeGates extends MPlugin {
 
 		Conf.load();
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			@Override
-			public void run() {
-				Gates.INSTANCE.load();
-				Gates.INSTANCE.openAll();
-				loaded = true;
-			}
-		}, 20);
+		Gates.INSTANCE.load();
+		Gates.INSTANCE.openAll();
 
-		// Register events
 		new TheListener();
 
 		postEnable();
@@ -48,10 +39,8 @@ public class CreativeGates extends MPlugin {
 	@Override
 	public void onDisable() {
 		Conf.save();
-		if (loaded) {
-			Gates.INSTANCE.emptyAll();
-			Gates.INSTANCE.save();
-		}
+		Gates.INSTANCE.emptyAll();
+		Gates.INSTANCE.save();
 	}
 
 }
