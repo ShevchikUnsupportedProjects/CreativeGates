@@ -55,11 +55,11 @@ public class Gate implements Comparable<Gate> {
 
 	@SuppressWarnings("deprecation")
 	public void open() throws GateOpenException {
-		Block sourceBlock = sourceCoord.getBlock();
-
 		if (this.isOpen()) {
 			return;
 		}
+
+		Block sourceBlock = sourceCoord.getBlock();
 
 		if (sourceBlock == null || sourceBlock.getTypeId() != Conf.getInstance().block) {
 			throw new GateOpenException(CreativeGates.getInstance().txt.parse(Lang.openFailWrongSourceMaterial, TextUtil.getMaterialName(Conf.getInstance().block)));
