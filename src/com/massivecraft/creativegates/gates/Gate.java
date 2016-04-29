@@ -38,13 +38,14 @@ public class Gate implements Comparable<Gate> {
 		expandFacesNS.add(BlockFace.SOUTH);
 	}
 
-	public Gate() {
+	protected Gate() {
 	}
 
 	public void setup(String id) {
+		this.id = id;
 		contentCoords = new HashSet<WorldCoord>();
 		frameCoords = new HashSet<WorldCoord>();
-		frameMaterialIds = new TreeSet<IdAndDataEntry>();
+		frameMaterialIds = new HashSet<IdAndDataEntry>();
 	}
 
 	/**

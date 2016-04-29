@@ -121,6 +121,11 @@ public class TheListener implements Listener {
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
+
+		if (event.getItem() == null) {
+			return;
+		}
+
 		if (event.getItem().getTypeId() != Conf.getInstance().wand) {
 			return;
 		}
