@@ -157,11 +157,18 @@ public class Gate implements Comparable<Gate> {
 	 * This method finds the place where this gates goes to. We pick the next gate in the network chain that has a non blocked exit.
 	 */
 	public Gate getMyTargetGate() {
-		for (Gate gate : this.getSelfRelativeGatePath()) {
-			if (gate != null)
-				return gate;
+		ArrayList<Gate> networkGatePath = this.getNetworkGatePath();
+		int myIndex = networkGatePath.indexOf(this);
+
+		if (networkGatePath.size() == 1) {
+			return null;
 		}
-		return null;
+
+		if (myIndex < networkGatePath.size() - 1) {
+			return networkGatePath.get(myIndex + 1);
+		} else {
+			return networkGatePath.get(0);
+		}
 	}
 
 	/*
@@ -181,24 +188,6 @@ public class Gate implements Comparable<Gate> {
 		}
 
 		return networkGatePath;
-	}
-
-	/*
-	 * Return the gates on the network in the order they come after this gate. This gate itself is not included (as opposed to getNetworkGatePath where it is). This gate itself would be in the beginning / end of this path.
-	 */
-	public ArrayList<Gate> getSelfRelativeGatePath() {
-		ArrayList<Gate> selfRelativeGatePath = new ArrayList<Gate>();
-
-		ArrayList<Gate> networkGatePath = this.getNetworkGatePath();
-		int myIndex = networkGatePath.indexOf(this);
-
-		// Add what is after me
-		selfRelativeGatePath.addAll(networkGatePath.subList(myIndex + 1, networkGatePath.size()));
-
-		// Add what is before me
-		selfRelativeGatePath.addAll(networkGatePath.subList(0, myIndex));
-
-		return selfRelativeGatePath;
 	}
 
 	/*
