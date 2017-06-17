@@ -5,10 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
