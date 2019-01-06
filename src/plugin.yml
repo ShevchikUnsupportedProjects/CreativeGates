@@ -1,3 +1,4 @@
 main: com.massivecraft.creativegates.CreativeGates
-name: CreativeGates
-version: 1.0.oldgood
+name: CreativeGatesLegacy
+api-version: 1.13
+version: 1.1

@@ -1,6 +1,9 @@
 package com.massivecraft.creativegates.zcore.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,31 +74,12 @@ public class TextUtil {
 	}
 
 	public static String parseColorAmp(String string) {
-		return string
-		.replaceAll("(§([a-z0-9]))", "\u00A7$2")
-		.replaceAll("(&([a-z0-9]))", "\u00A7$2")
-		.replace("&&", "&");
+		return string.replaceAll("(§([a-z0-9]))", "\u00A7$2").replaceAll("(&([a-z0-9]))", "\u00A7$2").replace("&&", "&");
 	}
 
 	public static String parseColorTags(String string) {
-		return string
-		.replace("<empty>", "")
-		.replace("<black>", "\u00A70")
-		.replace("<navy>", "\u00A71")
-		.replace("<green>", "\u00A72")
-		.replace("<teal>", "\u00A73")
-		.replace("<red>", "\u00A74")
-		.replace("<purple>", "\u00A75")
-		.replace("<gold>", "\u00A76")
-		.replace("<silver>", "\u00A77")
-		.replace("<gray>", "\u00A78")
-		.replace("<blue>", "\u00A79")
-		.replace("<lime>", "\u00A7a")
-		.replace("<aqua>", "\u00A7b")
-		.replace("<rose>", "\u00A7c")
-		.replace("<pink>", "\u00A7d")
-		.replace("<yellow>", "\u00A7e")
-		.replace("<white>", "\u00A7f");
+		return string.replace("<empty>", "").replace("<black>", "\u00A70").replace("<navy>", "\u00A71").replace("<green>", "\u00A72").replace("<teal>", "\u00A73").replace("<red>", "\u00A74").replace("<purple>", "\u00A75").replace("<gold>", "\u00A76").replace("<silver>", "\u00A77")
+				.replace("<gray>", "\u00A78").replace("<blue>", "\u00A79").replace("<lime>", "\u00A7a").replace("<aqua>", "\u00A7b").replace("<rose>", "\u00A7c").replace("<pink>", "\u00A7d").replace("<yellow>", "\u00A7e").replace("<white>", "\u00A7f");
 	}
 
 	// -------------------------------------------- //
@@ -118,10 +102,11 @@ public class TextUtil {
 	}
 
 	public static String repeat(String s, int times) {
-		if (times <= 0)
+		if (times <= 0) {
 			return "";
-		else
+		} else {
 			return s + repeat(s, times - 1);
+		}
 	}
 
 	// -------------------------------------------- //
@@ -130,11 +115,6 @@ public class TextUtil {
 
 	public static String getMaterialName(Material material) {
 		return material.toString().replace('_', ' ').toLowerCase();
-	}
-
-	@SuppressWarnings("deprecation")
-	public static String getMaterialName(int materialId) {
-		return getMaterialName(Material.getMaterial(materialId));
 	}
 
 	// -------------------------------------------- //
@@ -151,10 +131,11 @@ public class TextUtil {
 		int eatLeft = (centerlen / 2) - titleizeBalance;
 		int eatRight = (centerlen - eatLeft) + titleizeBalance;
 
-		if (eatLeft < pivot)
+		if (eatLeft < pivot) {
 			return parseTags("<a>") + titleizeLine.substring(0, pivot - eatLeft) + center + titleizeLine.substring(pivot + eatRight);
-		else
+		} else {
 			return parseTags("<a>") + center;
+		}
 	}
 
 	public ArrayList<String> getPage(List<String> lines, int pageHumanBased, String title) {
@@ -168,7 +149,7 @@ public class TextUtil {
 		if (pagecount == 0) {
 			ret.add(this.parseTags("<i>Sorry. No Pages available."));
 			return ret;
-		} else if (pageZeroBased < 0 || pageHumanBased > pagecount) {
+		} else if ((pageZeroBased < 0) || (pageHumanBased > pagecount)) {
 			ret.add(this.parseTags("<i>Invalid page. Must be between 1 and " + pagecount));
 			return ret;
 		}
@@ -200,7 +181,7 @@ public class TextUtil {
 	public static final long millisPerYear = 365 * millisPerDay;
 
 	public static String getTimeDeltaDescriptionRelNow(long millis) {
-		double absmillis = (double) Math.abs(millis);
+		double absmillis = Math.abs(millis);
 		String agofromnow = "from now";
 		String unit;
 		long num;
@@ -210,25 +191,25 @@ public class TextUtil {
 
 		// We use a factor 3 below for a reason... why do you think?
 		// Answer: it is a way to make our round of error smaller.
-		if (absmillis < 3 * millisPerSecond) {
+		if (absmillis < (3 * millisPerSecond)) {
 			unit = "milliseconds";
 			num = (long) (absmillis);
-		} else if (absmillis < 3 * millisPerMinute) {
+		} else if (absmillis < (3 * millisPerMinute)) {
 			unit = "seconds";
 			num = (long) (absmillis / millisPerSecond);
-		} else if (absmillis < 3 * millisPerHour) {
+		} else if (absmillis < (3 * millisPerHour)) {
 			unit = "minutes";
 			num = (long) (absmillis / millisPerMinute);
-		} else if (absmillis < 3 * millisPerDay) {
+		} else if (absmillis < (3 * millisPerDay)) {
 			unit = "hours";
 			num = (long) (absmillis / millisPerHour);
-		} else if (absmillis < 3 * millisPerWeek) {
+		} else if (absmillis < (3 * millisPerWeek)) {
 			unit = "days";
 			num = (long) (absmillis / millisPerDay);
-		} else if (absmillis < 3 * millisPerMonth) {
+		} else if (absmillis < (3 * millisPerMonth)) {
 			unit = "weeks";
 			num = (long) (absmillis / millisPerWeek);
-		} else if (absmillis < 3 * millisPerYear) {
+		} else if (absmillis < (3 * millisPerYear)) {
 			unit = "months";
 			num = (long) (absmillis / millisPerMonth);
 		} else {

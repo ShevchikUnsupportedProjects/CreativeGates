@@ -2,7 +2,7 @@ package com.massivecraft.creativegates;
 
 import com.massivecraft.creativegates.gates.Gates;
 import com.massivecraft.creativegates.gates.TheListener;
-import com.massivecraft.creativegates.zcore.*;
+import com.massivecraft.creativegates.zcore.MPlugin;
 
 public class CreativeGates extends MPlugin {
 
@@ -23,8 +23,9 @@ public class CreativeGates extends MPlugin {
 	public void onEnable() {
 		loaded = false;
 
-		if (!preEnable())
+		if (!preEnable()) {
 			return;
+		}
 
 		Conf.load();
 

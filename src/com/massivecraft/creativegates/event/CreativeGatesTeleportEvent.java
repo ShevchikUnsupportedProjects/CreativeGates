@@ -15,6 +15,7 @@ public class CreativeGatesTeleportEvent extends Event implements Cancellable {
 	// -------------------------------------------- //
 	private static final HandlerList handlers = new HandlerList();
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
@@ -30,16 +31,18 @@ public class CreativeGatesTeleportEvent extends Event implements Cancellable {
 	// FIELD: cancelled
 	private boolean cancelled;
 
+	@Override
 	public boolean isCancelled() {
 		return this.cancelled;
 	}
 
+	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
 	}
 
 	// FIELD: event
-	private PlayerMoveEvent event;
+	private final PlayerMoveEvent event;
 
 	public PlayerMoveEvent getPlayerMoveEvent() {
 		return this.event;

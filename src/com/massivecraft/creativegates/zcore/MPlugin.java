@@ -1,7 +1,9 @@
 package com.massivecraft.creativegates.zcore;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +29,7 @@ public abstract class MPlugin extends JavaPlugin {
 	// private MPluginSecretServerListener mPluginSecretServerListener;
 
 	// Our stored base commands
-	private List<MCommand<?>> baseCommands = new ArrayList<MCommand<?>>();
+	private final List<MCommand<?>> baseCommands = new ArrayList<MCommand<?>>();
 
 	public List<MCommand<?>> getBaseCommands() {
 		return this.baseCommands;
@@ -81,15 +83,17 @@ public abstract class MPlugin extends JavaPlugin {
 		}
 
 		for (MCommand<?> command : this.getBaseCommands()) {
-			if (noSlash && !command.allowNoSlashAccess)
+			if (noSlash && !command.allowNoSlashAccess) {
 				continue;
+			}
 
 			for (String alias : command.aliases) {
 				if (commandString.startsWith(alias + " ") || commandString.equals(alias)) {
 					List<String> args = new ArrayList<String>(Arrays.asList(commandString.split("\\s+")));
 					args.remove(0);
-					if (testOnly)
+					if (testOnly) {
 						return true;
+					}
 					command.execute(sender, args);
 					return true;
 				}

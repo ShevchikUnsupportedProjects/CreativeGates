@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ public class Gates {
 	private Gates() {
 	}
 
-	private final HashSet<Gate> gates = new HashSet<Gate>();
+	private final TreeSet<Gate> gates = new TreeSet<>();
 
 	private File getFile() {
 		return new File(CreativeGates.getInstance().getDataFolder(), "gate.json");
@@ -53,7 +53,7 @@ public class Gates {
 	public void save() {
 		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(getFile()))) {
 			int fakeId = 1;
-			HashMap<String, Gate> map = new HashMap<String, Gate>();
+			HashMap<String, Gate> map = new HashMap<>();
 			for (Gate gate : gates) {
 				map.put(String.valueOf(fakeId++), gate);
 			}
@@ -63,7 +63,7 @@ public class Gates {
 	}
 
 	public Collection<Gate> get() {
-		return new ArrayList<Gate>(gates);
+		return Collections.unmodifiableCollection(gates);
 	}
 
 	// -------------------------------------------- //
@@ -72,7 +72,7 @@ public class Gates {
 
 	public Gate findFromContent(WorldCoord coord) {
 		for (Gate gate : this.get()) {
-			if (gate.contentCoords.contains(coord)) {
+			if (gate.isContentCoord(coord)) {
 				return gate;
 			}
 		}
@@ -85,7 +85,7 @@ public class Gates {
 
 	public Gate findFromFrame(WorldCoord coord) {
 		for (Gate gate : this.get()) {
-			if (gate.frameCoords.contains(coord)) {
+			if (gate.isFrameCoord(coord)) {
 				return gate;
 			}
 		}
@@ -134,8 +134,7 @@ public class Gates {
 	// -------------------------------------------- //
 
 	public Gate create(WorldCoord sourceCoord, Player player) {
-		Gate gate = new Gate();
-		gate.sourceCoord = sourceCoord;
+		Gate gate = new Gate(sourceCoord);
 
 		try {
 			gate.open();

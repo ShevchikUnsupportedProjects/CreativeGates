@@ -15,10 +15,11 @@ import com.google.gson.JsonSyntaxException;
 
 public class Conf {
 
-	@SuppressWarnings("deprecation")
-	public int wand = Material.WATCH.getId();
-	@SuppressWarnings("deprecation")
-	public int block = Material.DIAMOND_BLOCK.getId();
+	public transient Material wandMaterial;
+	public transient Material blockMaterial;
+
+	private final String wand = Material.CLOCK.toString();
+	private final String block = Material.WET_SPONGE.toString();
 	public int maxarea = 200;
 	public boolean effects = true;
 
@@ -36,6 +37,8 @@ public class Conf {
 		try {
 			if (getFile().exists()) {
 				instance = CreativeGates.getInstance().gson.fromJson(new InputStreamReader(new FileInputStream(getFile())), Conf.class);
+				instance.wandMaterial = Material.getMaterial(instance.wand);
+				instance.blockMaterial = Material.getMaterial(instance.block);
 			} else {
 				save();
 			}

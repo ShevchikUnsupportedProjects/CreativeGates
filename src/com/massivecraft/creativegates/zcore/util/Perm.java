@@ -18,18 +18,21 @@ public class Perm {
 	}
 
 	public String getPermissionDescription(String perm) {
-		if (perm == null)
+		if (perm == null) {
 			return Lang.permDoThat;
+		}
 		Permission permission = Bukkit.getPluginManager().getPermission(perm);
 		return getPermissionDescription(permission);
 	}
 
 	public String getPermissionDescription(Permission perm) {
-		if (perm == null)
+		if (perm == null) {
 			return Lang.permDoThat;
+		}
 		String desc = perm.getDescription();
-		if (desc == null || desc.length() == 0)
+		if ((desc == null) || (desc.length() == 0)) {
 			return Lang.permDoThat;
+		}
 		return desc;
 	}
 
@@ -38,29 +41,32 @@ public class Perm {
 	}
 
 	public boolean has(CommandSender me, String perm) {
-		if (me == null)
+		if (me == null) {
 			return false;
+		}
 		return me.hasPermission(perm);
 	}
 
 	public boolean has(CommandSender me, String perm, boolean verbose) {
 		if (has(me, perm)) {
 			return true;
-		} else if (verbose && me != null) {
+		} else if (verbose && (me != null)) {
 			me.sendMessage(getForbiddenMessage(perm));
 		}
 		return false;
 	}
 
 	public <T> T pickFirstVal(CommandSender me, Map<String, T> perm2val) {
-		if (perm2val == null)
+		if (perm2val == null) {
 			return null;
+		}
 		T ret = null;
 
 		for (Entry<String, T> entry : perm2val.entrySet()) {
 			ret = entry.getValue();
-			if (has(me, entry.getKey()))
+			if (has(me, entry.getKey())) {
 				break;
+			}
 		}
 
 		return ret;

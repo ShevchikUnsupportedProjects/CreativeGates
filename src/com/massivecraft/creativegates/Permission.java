@@ -3,7 +3,7 @@ package com.massivecraft.creativegates;
 import org.bukkit.command.CommandSender;
 
 public enum Permission {
-	USE("use"), CREATE("create"), DESTROY("destroy"), ;
+	USE("use"), CREATE("create"), DESTROY("destroy"),;
 
 	public final String node;
 

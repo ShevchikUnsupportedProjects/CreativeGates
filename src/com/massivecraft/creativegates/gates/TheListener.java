@@ -37,7 +37,7 @@ public class TheListener implements Listener {
 	public void onBlockFromTo(BlockFromToEvent event) {
 		Block blockFrom = event.getBlock();
 
-		if (blockFrom.getType() != Material.STATIONARY_WATER) {
+		if (blockFrom.getType() != Material.WATER) {
 			return;
 		}
 
@@ -89,7 +89,7 @@ public class TheListener implements Listener {
 		Block blockToTest = event.getTo().getBlock().getRelative(BlockFace.UP);
 
 		// Fast material check
-		if (blockToTest.getType() != Material.STATIONARY_WATER) {
+		if (blockToTest.getType() != Material.WATER) {
 			return;
 		}
 
@@ -116,11 +116,10 @@ public class TheListener implements Listener {
 		Bukkit.getPluginManager().callEvent(gateevent);
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		// We are only interested in clicks on a block with a wand
-		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+		if ((event.getAction() != Action.LEFT_CLICK_BLOCK) && (event.getAction() != Action.RIGHT_CLICK_BLOCK)) {
 			return;
 		}
 
@@ -128,7 +127,7 @@ public class TheListener implements Listener {
 			return;
 		}
 
-		if (event.getItem().getTypeId() != Conf.getInstance().wand) {
+		if (event.getItem().getType() != Conf.getInstance().wandMaterial) {
 			return;
 		}
 
@@ -143,8 +142,8 @@ public class TheListener implements Listener {
 			return;
 		}
 
-		// Did we hit a diamond block?
-		if (clickedBlock.getTypeId() == Conf.getInstance().block) {
+		// Did we hit a soruce block?
+		if (clickedBlock.getType() == Conf.getInstance().blockMaterial) {
 			// create a gate if the player has the permission
 			if (Permission.CREATE.has(player, true)) {
 				Gates.INSTANCE.create(new WorldCoord(clickedBlock), player);
@@ -155,7 +154,7 @@ public class TheListener implements Listener {
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
 		for (Gate gate : Gates.INSTANCE.get()) {
-			if (!gate.isOpen() && gate.sourceCoord.worldName.equalsIgnoreCase(event.getWorld().getName())) {
+			if (!gate.isOpen() && gate.isAtWorld(event.getWorld())) {
 				try {
 					gate.open();
 				} catch (GateOpenException e) {
@@ -167,7 +166,7 @@ public class TheListener implements Listener {
 	@EventHandler
 	public void onWorldUnload(WorldUnloadEvent event) {
 		for (Gate gate : Gates.INSTANCE.get()) {
-			if (gate.isOpen() && gate.sourceCoord.worldName.equalsIgnoreCase(event.getWorld().getName())) {
+			if (gate.isOpen() && gate.isAtWorld(event.getWorld())) {
 				gate.close();
 			}
 		}

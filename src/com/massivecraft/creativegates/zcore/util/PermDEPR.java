@@ -1,6 +1,7 @@
 package com.massivecraft.creativegates.zcore.util;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.command.CommandSender;
@@ -10,7 +11,7 @@ import com.massivecraft.creativegates.zcore.MPlugin;
 
 public class PermDEPR {
 
-	public Map<String, String> permissionDescriptions = new HashMap<String, String>();
+	public Map<String, String> permissionDescriptions = new HashMap<>();
 
 	protected MPlugin p;
 
@@ -30,7 +31,7 @@ public class PermDEPR {
 		return desc;
 	}
 
-	/**
+	/*
 	 * This method tests if me has a certain permission and returns true if me has. Otherwise false
 	 */
 	public boolean has(CommandSender me, String perm) {
@@ -47,14 +48,16 @@ public class PermDEPR {
 	}
 
 	public <T> T pickFirstVal(CommandSender me, Map<String, T> perm2val) {
-		if (perm2val == null)
+		if (perm2val == null) {
 			return null;
+		}
 		T ret = null;
 
 		for (Entry<String, T> entry : perm2val.entrySet()) {
 			ret = entry.getValue();
-			if (has(me, entry.getKey()))
+			if (has(me, entry.getKey())) {
 				break;
+			}
 		}
 
 		return ret;

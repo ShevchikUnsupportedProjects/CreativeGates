@@ -35,6 +35,7 @@ public class WorldCoord {
 	// Converters
 	// ----------------------------------------------//
 
+	@Override
 	public String toString() {
 		return "WorldCoord[" + worldName + "," + x + "," + y + "," + z + "]";
 	}
@@ -49,8 +50,9 @@ public class WorldCoord {
 
 	public Location getLocation() {
 		Block block = this.getBlock();
-		if (block == null)
+		if (block == null) {
 			return null;
+		}
 		return block.getLocation();
 	}
 
@@ -58,23 +60,27 @@ public class WorldCoord {
 	// Comparison
 	// ----------------------------------------------//
 
+	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 19 * hash + (this.worldName != null ? this.worldName.hashCode() : 0);
-		hash = 19 * hash + this.x;
-		hash = 19 * hash + this.y;
-		hash = 19 * hash + this.z;
+		hash = (19 * hash) + (this.worldName != null ? this.worldName.hashCode() : 0);
+		hash = (19 * hash) + this.x;
+		hash = (19 * hash) + this.y;
+		hash = (19 * hash) + this.z;
 		return hash;
 	};
 
+	@Override
 	public boolean equals(Object obj) {
-		if (obj == this)
+		if (obj == this) {
 			return true;
-		if (!(obj instanceof WorldCoord))
+		}
+		if (!(obj instanceof WorldCoord)) {
 			return false;
+		}
 
 		WorldCoord that = (WorldCoord) obj;
-		return this.x == that.x && this.y == that.y && this.z == that.z && (this.worldName == null ? that.worldName == null : this.worldName.equals(that.worldName));
+		return (this.x == that.x) && (this.y == that.y) && (this.z == that.z) && (this.worldName == null ? that.worldName == null : this.worldName.equals(that.worldName));
 	}
 
 }

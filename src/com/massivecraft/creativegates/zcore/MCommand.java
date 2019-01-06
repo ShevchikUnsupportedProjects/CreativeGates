@@ -1,21 +1,22 @@
 package com.massivecraft.creativegates.zcore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.massivecraft.creativegates.zcore.MCommand;
-import com.massivecraft.creativegates.zcore.MPlugin;
 import com.massivecraft.creativegates.zcore.util.TextUtil;
 
 public abstract class MCommand<T extends MPlugin> {
 	public T p;
 
 	// The sub-commands to this command
-	public final List<MCommand<?>> subCommands = new ArrayList<MCommand<?>>();
+	public final List<MCommand<?>> subCommands = new ArrayList<>();
 
 	public void addSubCommand(MCommand<?> subCommand) {
 		subCommand.commandChain.addAll(this.commandChain);
@@ -24,12 +25,12 @@ public abstract class MCommand<T extends MPlugin> {
 	}
 
 	// The different names this commands will react to
-	public final List<String> aliases = new ArrayList<String>();
+	public final List<String> aliases = new ArrayList<>();
 	public final boolean allowNoSlashAccess = false;
 
 	// Information on the args
-	public final List<String> requiredArgs = new ArrayList<String>();
-	public final LinkedHashMap<String, String> optionalArgs = new LinkedHashMap<String, String>();
+	public final List<String> requiredArgs = new ArrayList<>();
+	public final Map<String, String> optionalArgs = new LinkedHashMap<>();
 	public final boolean errorOnToManyArgs = true;
 
 	// FIELD: Help Short
@@ -52,7 +53,7 @@ public abstract class MCommand<T extends MPlugin> {
 		return this.helpShort;
 	}
 
-	public List<String> helpLong = new ArrayList<String>();
+	public List<String> helpLong = new ArrayList<>();
 
 	// Some information on permissions
 	public boolean senderMustBePlayer;
@@ -63,7 +64,7 @@ public abstract class MCommand<T extends MPlugin> {
 	public Player me; // Will only be set when the sender is a player
 	public boolean senderIsConsole;
 	public List<String> args; // Will contain the arguments, or and empty list if there are none.
-	public List<MCommand<?>> commandChain = new ArrayList<MCommand<?>>(); // The command chain used to execute this command
+	public List<MCommand<?>> commandChain = new ArrayList<>(); // The command chain used to execute this command
 
 	public MCommand(T p) {
 		this.p = p;
@@ -95,11 +96,13 @@ public abstract class MCommand<T extends MPlugin> {
 			}
 		}
 
-		if (!validCall(this.sender, this.args))
+		if (!validCall(this.sender, this.args)) {
 			return;
+		}
 
-		if (!this.isEnabled())
+		if (!this.isEnabled()) {
 			return;
+		}
 
 		perform();
 	}
@@ -115,7 +118,7 @@ public abstract class MCommand<T extends MPlugin> {
 	// Call Validation
 	// -------------------------------------------- //
 
-	/**
+	/*
 	 * In this method we validate that all prerequisites to perform this command has been met.
 	 */
 	// TODO: There should be a boolean for silence
@@ -150,8 +153,9 @@ public abstract class MCommand<T extends MPlugin> {
 	}
 
 	public boolean validSenderPermissions(CommandSender sender, boolean informSenderIfNot) {
-		if (this.permission == null)
+		if (this.permission == null) {
 			return true;
+		}
 		return p.perm.has(sender, this.permission, informSenderIfNot);
 	}
 
@@ -164,7 +168,7 @@ public abstract class MCommand<T extends MPlugin> {
 			return false;
 		}
 
-		if (args.size() > this.requiredArgs.size() + this.optionalArgs.size() && this.errorOnToManyArgs) {
+		if ((args.size() > (this.requiredArgs.size() + this.optionalArgs.size())) && this.errorOnToManyArgs) {
 			if (sender != null) {
 				// Get the to many string slice
 				List<String> theToMany = args.subList(this.requiredArgs.size() + this.optionalArgs.size(), args.size());
@@ -196,7 +200,7 @@ public abstract class MCommand<T extends MPlugin> {
 
 		ret.append(TextUtil.implode(this.aliases, ","));
 
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 
 		for (String requiredArg : this.requiredArgs) {
 			args.add("<" + requiredArg + ">");
@@ -257,7 +261,7 @@ public abstract class MCommand<T extends MPlugin> {
 
 	// Is set? ======================
 	public boolean argIsSet(int idx) {
-		if (this.args.size() < idx + 1) {
+		if (this.args.size() < (idx + 1)) {
 			return false;
 		}
 		return true;
@@ -265,7 +269,7 @@ public abstract class MCommand<T extends MPlugin> {
 
 	// STRING ======================
 	public String argAsString(int idx, String def) {
-		if (this.args.size() < idx + 1) {
+		if (this.args.size() < (idx + 1)) {
 			return def;
 		}
 		return this.args.get(idx);
@@ -277,8 +281,9 @@ public abstract class MCommand<T extends MPlugin> {
 
 	// INT ======================
 	public int strAsInt(String str, int def) {
-		if (str == null)
+		if (str == null) {
 			return def;
+		}
 		try {
 			int ret = Integer.parseInt(str);
 			return ret;
@@ -297,8 +302,9 @@ public abstract class MCommand<T extends MPlugin> {
 
 	// Double ======================
 	public double strAsDouble(String str, double def) {
-		if (str == null)
+		if (str == null) {
 			return def;
+		}
 		try {
 			double ret = Double.parseDouble(str);
 			return ret;
@@ -327,8 +333,9 @@ public abstract class MCommand<T extends MPlugin> {
 
 	public Boolean argAsBool(int idx, boolean def) {
 		String str = this.argAsString(idx);
-		if (str == null)
+		if (str == null) {
 			return def;
+		}
 
 		return strAsBool(str);
 	}
@@ -348,7 +355,7 @@ public abstract class MCommand<T extends MPlugin> {
 			}
 		}
 
-		if (msg && ret == null) {
+		if (msg && (ret == null)) {
 			this.msg("<b>No player \"<p>%s<b>\" could not be found.", name);
 		}
 
@@ -378,7 +385,7 @@ public abstract class MCommand<T extends MPlugin> {
 			}
 		}
 
-		if (msg && ret == null) {
+		if (msg && (ret == null)) {
 			this.msg("<b>No player match found for \"<p>%s<b>\".", name);
 		}
 

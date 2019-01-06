@@ -1,31 +1,28 @@
 package com.massivecraft.creativegates.gates;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import com.massivecraft.creativegates.Conf;
 import com.massivecraft.creativegates.CreativeGates;
-import com.massivecraft.creativegates.IdAndDataEntry;
 import com.massivecraft.creativegates.Lang;
 import com.massivecraft.creativegates.util.BlockUtil;
-import com.massivecraft.creativegates.zcore.util.*;
+import com.massivecraft.creativegates.zcore.util.TextUtil;
 
 public class Gate implements Comparable<Gate> {
 
-	public transient Set<WorldCoord> contentCoords;
-	public transient Set<WorldCoord> frameCoords;
-	public transient Set<IdAndDataEntry> frameMaterialIds;
-	public transient boolean frameDirIsNS; // True means NS direction. false means WE direction.
-
-	public WorldCoord sourceCoord;
-
-	private static transient final Set<BlockFace> expandFacesWE = new HashSet<BlockFace>();
-	private static transient final Set<BlockFace> expandFacesNS = new HashSet<BlockFace>();
+	private static transient final Set<BlockFace> expandFacesWE = new HashSet<>();
+	private static transient final Set<BlockFace> expandFacesNS = new HashSet<>();
 	static {
 		expandFacesWE.add(BlockFace.UP);
 		expandFacesWE.add(BlockFace.DOWN);
@@ -38,22 +35,38 @@ public class Gate implements Comparable<Gate> {
 		expandFacesNS.add(BlockFace.SOUTH);
 	}
 
-	protected Gate() {
-		contentCoords = new HashSet<WorldCoord>();
-		frameCoords = new HashSet<WorldCoord>();
-		frameMaterialIds = new HashSet<IdAndDataEntry>();
+	private final WorldCoord sourceCoord;
+
+	public Gate() {
+		this(null);
 	}
 
+	public Gate(WorldCoord sourceCoord) {
+		this.sourceCoord = sourceCoord;
+	}
+
+	private transient Set<WorldCoord> contentCoords = new HashSet<>();
+	private transient Set<WorldCoord> frameCoords = new HashSet<>();
+	private transient Set<BlockData> frameBlocksData = new HashSet<>();
+	private transient boolean frameDirIsNS; // True means NS direction. false means WE direction.
 	private transient boolean open;
 
-	/**
-	 * Is this gate open right now?
-	 */
 	public boolean isOpen() {
 		return open;
 	}
 
-	@SuppressWarnings("deprecation")
+	public boolean isFrameCoord(WorldCoord coord) {
+		return this.frameCoords.contains(coord);
+	}
+
+	public boolean isContentCoord(WorldCoord coord) {
+		return contentCoords.contains(coord);
+	}
+
+	public boolean isAtWorld(World world) {
+		return world.getName().equals(sourceCoord.worldName);
+	}
+
 	public void open() throws GateOpenException {
 		if (this.isOpen()) {
 			return;
@@ -61,8 +74,8 @@ public class Gate implements Comparable<Gate> {
 
 		Block sourceBlock = sourceCoord.getBlock();
 
-		if (sourceBlock == null || sourceBlock.getTypeId() != Conf.getInstance().block) {
-			throw new GateOpenException(CreativeGates.getInstance().txt.parse(Lang.openFailWrongSourceMaterial, TextUtil.getMaterialName(Conf.getInstance().block)));
+		if ((sourceBlock == null) || (sourceBlock.getType() != Conf.getInstance().blockMaterial)) {
+			throw new GateOpenException(CreativeGates.getInstance().txt.parse(Lang.openFailWrongSourceMaterial, TextUtil.getMaterialName(Conf.getInstance().blockMaterial)));
 		}
 
 		if (!this.dataPopulate()) {
@@ -79,7 +92,7 @@ public class Gate implements Comparable<Gate> {
 		empty();
 		contentCoords.clear();
 		frameCoords.clear();
-		frameMaterialIds.clear();
+		frameBlocksData.clear();
 		open = false;
 	}
 
@@ -91,7 +104,6 @@ public class Gate implements Comparable<Gate> {
 	/**
 	 * This method populates the "data" (coords and material ids). It will return false if there was no possible frame.
 	 */
-	@SuppressWarnings("deprecation")
 	private boolean dataPopulate() {
 		Block sourceBlock = sourceCoord.getBlock();
 
@@ -103,7 +115,7 @@ public class Gate implements Comparable<Gate> {
 		// Figure out dir and content... or throw no frame fail.
 		Set<Block> contentBlocks;
 
-		if (contentBlocksWE == null && contentBlocksNS == null) {
+		if ((contentBlocksWE == null) && (contentBlocksNS == null)) {
 			return false;
 		}
 
@@ -121,17 +133,14 @@ public class Gate implements Comparable<Gate> {
 			frameDirIsNS = false;
 		}
 
-		// Find the frame blocks and materials
-		Set<Block> frameBlocks = new HashSet<Block>();
+		// Find the frame blocks
+		Set<Block> frameBlocks = new HashSet<>();
 		Set<BlockFace> expandFaces = frameDirIsNS ? expandFacesNS : expandFacesWE;
 		for (Block currentBlock : contentBlocks) {
 			for (BlockFace face : expandFaces) {
 				Block potentialBlock = currentBlock.getRelative(face);
 				if (!contentBlocks.contains(potentialBlock)) {
 					frameBlocks.add(potentialBlock);
-					if (potentialBlock != sourceBlock) {
-						frameMaterialIds.add(new IdAndDataEntry(potentialBlock.getTypeId(), potentialBlock.getData()));
-					}
 				}
 			}
 		}
@@ -139,6 +148,9 @@ public class Gate implements Comparable<Gate> {
 		// Now we add the frame and content blocks as world coords to the lookup maps.
 		for (Block frameBlock : frameBlocks) {
 			this.frameCoords.add(new WorldCoord(frameBlock));
+			if (frameBlock != sourceBlock) {
+				frameBlocksData.add(frameBlock.getBlockData());
+			}
 		}
 		for (Block contentBlock : contentBlocks) {
 			this.contentCoords.add(new WorldCoord(contentBlock));
@@ -155,7 +167,7 @@ public class Gate implements Comparable<Gate> {
 	 * This method finds the place where this gates goes to. We pick the next gate in the network chain that has a non blocked exit.
 	 */
 	public Gate getMyTargetGate() {
-		ArrayList<Gate> networkGatePath = this.getNetworkGatePath();
+		List<Gate> networkGatePath = this.getNetworkGatePath();
 
 		if (networkGatePath.size() == 1) {
 			return null;
@@ -163,7 +175,7 @@ public class Gate implements Comparable<Gate> {
 
 		int myIndex = networkGatePath.indexOf(this);
 
-		if (myIndex < networkGatePath.size() - 1) {
+		if (myIndex < (networkGatePath.size() - 1)) {
 			return networkGatePath.get(myIndex + 1);
 		} else {
 			return networkGatePath.get(0);
@@ -173,15 +185,11 @@ public class Gate implements Comparable<Gate> {
 	/*
 	 * Find all the gates on the network of this gate (including this gate itself). The gates on the same network are those with the same frame materials.
 	 */
-	public ArrayList<Gate> getNetworkGatePath() {
-		ArrayList<Gate> networkGatePath = new ArrayList<Gate>();
+	public List<Gate> getNetworkGatePath() {
+		ArrayList<Gate> networkGatePath = new ArrayList<>();
 
-		// We put the gates in a tree set to sort them after gate location.
-		TreeSet<Gate> gates = new TreeSet<Gate>();
-		gates.addAll(Gates.INSTANCE.get());
-
-		for (Gate gate : gates) {
-			if (gate.isOpen() && this.frameMaterialIds.equals(gate.frameMaterialIds)) {
+		for (Gate gate : Gates.INSTANCE.get()) {
+			if (gate.isOpen() && this.frameBlocksData.equals(gate.frameBlocksData)) {
 				networkGatePath.add(gate);
 			}
 		}
@@ -231,14 +239,14 @@ public class Gate implements Comparable<Gate> {
 	// Gate information
 	// ----------------------------------------------//
 
-	@SuppressWarnings("deprecation")
 	public String getInfoMsgMaterial() {
-		ArrayList<String> materialNames = new ArrayList<String>();
-		for (IdAndDataEntry frameMaterialId : this.frameMaterialIds) {
-			materialNames.add(CreativeGates.getInstance().txt.parse("<h>") + TextUtil.getMaterialName(Material.getMaterial(frameMaterialId.getId()))+":"+frameMaterialId.getData());
+		ArrayList<String> names = new ArrayList<>();
+
+		for (BlockData frameBlockData : frameBlocksData) {
+			names.add(CreativeGates.getInstance().txt.parse("<h>") + frameBlockData.getAsString());
 		}
 
-		String materials = TextUtil.implode(materialNames, CreativeGates.getInstance().txt.parse("<i>, "));
+		String materials = TextUtil.implode(names, CreativeGates.getInstance().txt.parse("<i>, "));
 
 		return CreativeGates.getInstance().txt.parse(Lang.infoMaterials, materials);
 	}
@@ -261,7 +269,7 @@ public class Gate implements Comparable<Gate> {
 		for (WorldCoord coord : this.contentCoords) {
 			Block block = coord.getBlock();
 			if (block != null) {
-				block.setType(Material.STATIONARY_WATER);
+				block.setType(Material.WATER);
 			}
 		}
 	}
@@ -292,7 +300,7 @@ public class Gate implements Comparable<Gate> {
 			return foundBlocks;
 		}
 
-		if (startBlock.getType() == Material.AIR || startBlock.getType() == Material.WATER || startBlock.getType() == Material.STATIONARY_WATER) {
+		if ((startBlock.getType() == Material.AIR) || (startBlock.getType() == Material.WATER)) {
 			// ... We found a block :D ...
 			foundBlocks.add(startBlock);
 
@@ -305,7 +313,6 @@ public class Gate implements Comparable<Gate> {
 
 		return foundBlocks;
 	}
-
 
 	@Override
 	public int compareTo(Gate o) {
